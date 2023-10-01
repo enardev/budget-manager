@@ -7,7 +7,7 @@ type DeleteItemError struct {
 }
 
 func NewDeleteItemError(item string) error {
-	return &SaveItemError{message: fmt.Sprintf("error updating %s", item)}
+	return &DeleteItemError{message: fmt.Sprintf("error deleting %s", item)}
 }
 
 func (e *DeleteItemError) Error() string {
