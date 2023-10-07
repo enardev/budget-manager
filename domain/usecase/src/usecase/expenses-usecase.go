@@ -24,7 +24,7 @@ func (uc ExpenseUseCase) FindAll() ([]model.Expense, error) {
 }
 
 func (uc ExpenseUseCase) Save(expense *model.Expense) (*model.Expense, error) {
-	if expense.Id <= 0 {
+	if expense.Id < 0 {
 		return nil, errors.NewInvalidItemError(ExpenseName, "field Id must be a positive integer")
 	}
 

@@ -227,7 +227,7 @@ func TestExpenseUseCaseSave(t *testing.T) {
 			name: "given a expense, when the id is undefined, then get error",
 			args: args{
 				expense: &model.Expense{
-					Id: 0,
+					Id: -1,
 				},
 			},
 			wantErr: true,
