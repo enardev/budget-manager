@@ -1,0 +1,9 @@
+
+db:
+  properties:
+    host: localhost
+    port: 50000
+    user: cnxuser
+    password: cnxpass
+    dbname: budgetdb
+    schema: schbudget

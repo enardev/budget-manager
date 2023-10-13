@@ -11,12 +11,12 @@ import (
 	"github.com/enaldo1709/budget-manager/domain/model/src/model/port/mocks"
 )
 
-func TestExpenseUseCase_FindByID(t *testing.T) {
+func TestExpenseUseCaseFindByID(t *testing.T) {
 	type fields struct {
 		repository port.ExpenseRepository
 	}
 	type args struct {
-		id string
+		id int
 	}
 	tests := []struct {
 		name    string
@@ -29,43 +29,55 @@ func TestExpenseUseCase_FindByID(t *testing.T) {
 			name: "given an id then get a expense model",
 			fields: fields{
 				repository: &mocks.ExpenseRepositoryMock{
-					ExistsFn: func(s string) bool {
-						return true
+					ExistsFn: func(s int) (bool, error) {
+						return true, nil
 					},
-					FindByIDFn: func(id string) (*model.Expense, error) {
+					FindByIDFn: func(id int) (*model.Expense, error) {
 						return &model.Expense{
-							Id:     "31667aaf-8c90-4887-bf13-5c4598689656",
-							Amount: 25.3,
-							Date:   time.Date(2023, 4, 15, 0, 0, 0, 0, time.Local),
+							Id:      1,
+							Amount:  25.3,
+							Created: time.Date(2023, 4, 15, 0, 0, 0, 0, time.Local),
 						}, nil
 					},
 				},
 			},
-			args: args{id: "31667aaf-8c90-4887-bf13-5c4598689656"},
+			args: args{id: 1},
 			want: &model.Expense{
-				Id:     "31667aaf-8c90-4887-bf13-5c4598689656",
-				Amount: 25.3,
-				Date:   time.Date(2023, 4, 15, 0, 0, 0, 0, time.Local),
+				Id:      1,
+				Amount:  25.3,
+				Created: time.Date(2023, 4, 15, 0, 0, 0, 0, time.Local),
 			},
 			wantErr: false,
 		},
 		{
-			name: "given an id when the expense not exists then get an error",
+			name: "given an id, when the expense not exists then get an error",
 			fields: fields{
 				repository: &mocks.ExpenseRepositoryMock{
-					ExistsFn: func(s string) bool {
-						return false
+					ExistsFn: func(s int) (bool, error) {
+						return false, nil
 					},
 				},
 			},
-			args:    args{id: "31667aaf-8c90-4887-bf13-5c4598689656"},
+			args:    args{id: 1},
+			wantErr: true,
+		},
+		{
+			name: "given an id, when check if the expense exists, then get an error",
+			fields: fields{
+				repository: &mocks.ExpenseRepositoryMock{
+					ExistsFn: func(s int) (bool, error) {
+						return false, errors.ErrUnsupported
+					},
+				},
+			},
+			args:    args{id: 1},
 			wantErr: true,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			uc := ExpenseUseCase{
-				repository: tt.fields.repository,
+				Repository: tt.fields.repository,
 			}
 			got, err := uc.FindByID(tt.args.id)
 			if (err != nil) != tt.wantErr {
@@ -79,10 +91,9 @@ func TestExpenseUseCase_FindByID(t *testing.T) {
 	}
 }
 
-func TestExpenseUseCase_FindAll(t *testing.T) {
+func TestExpenseUseCaseFindAll(t *testing.T) {
 	type fields struct {
 		repository port.ExpenseRepository
-		idGen      port.IdGenerator
 	}
 	tests := []struct {
 		name    string
@@ -91,20 +102,20 @@ func TestExpenseUseCase_FindAll(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "Got an array of expenses",
+			name: "got an array of expenses",
 			fields: fields{
 				repository: &mocks.ExpenseRepositoryMock{
 					FindAllFn: func() ([]model.Expense, error) {
 						return []model.Expense{
 							{
-								Id:     "04c41b3c-d877-430b-a451-8a662ea5b684",
-								Amount: 33.5,
-								Date:   time.Date(2023, 4, 15, 0, 0, 0, 0, time.Local),
+								Id:      1,
+								Amount:  33.5,
+								Created: time.Date(2023, 4, 15, 0, 0, 0, 0, time.Local),
 							},
 							{
-								Id:     "33dc1676-48f6-4a49-9d3c-bbb0959c4551",
-								Amount: 24.7,
-								Date:   time.Date(2023, 4, 16, 0, 0, 0, 0, time.Local),
+								Id:      1,
+								Amount:  24.7,
+								Created: time.Date(2023, 4, 16, 0, 0, 0, 0, time.Local),
 							},
 						}, nil
 					},
@@ -112,20 +123,20 @@ func TestExpenseUseCase_FindAll(t *testing.T) {
 			},
 			want: []model.Expense{
 				{
-					Id:     "04c41b3c-d877-430b-a451-8a662ea5b684",
-					Amount: 33.5,
-					Date:   time.Date(2023, 4, 15, 0, 0, 0, 0, time.Local),
+					Id:      1,
+					Amount:  33.5,
+					Created: time.Date(2023, 4, 15, 0, 0, 0, 0, time.Local),
 				},
 				{
-					Id:     "33dc1676-48f6-4a49-9d3c-bbb0959c4551",
-					Amount: 24.7,
-					Date:   time.Date(2023, 4, 16, 0, 0, 0, 0, time.Local),
+					Id:      1,
+					Amount:  24.7,
+					Created: time.Date(2023, 4, 16, 0, 0, 0, 0, time.Local),
 				},
 			},
 			wantErr: false,
 		},
 		{
-			name: "Got an empty array",
+			name: "got an empty array",
 			fields: fields{
 				repository: &mocks.ExpenseRepositoryMock{
 					FindAllFn: func() ([]model.Expense, error) {
@@ -137,7 +148,7 @@ func TestExpenseUseCase_FindAll(t *testing.T) {
 			wantErr: false,
 		},
 		{
-			name: "Got an error",
+			name: "got an error",
 			fields: fields{
 				repository: &mocks.ExpenseRepositoryMock{
 					FindAllFn: func() ([]model.Expense, error) {
@@ -151,8 +162,7 @@ func TestExpenseUseCase_FindAll(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			uc := ExpenseUseCase{
-				repository: tt.fields.repository,
-				idGen:      tt.fields.idGen,
+				Repository: tt.fields.repository,
 			}
 			got, err := uc.FindAll()
 			if (err != nil) != tt.wantErr {
@@ -166,13 +176,12 @@ func TestExpenseUseCase_FindAll(t *testing.T) {
 	}
 }
 
-func TestExpenseUseCase_Save(t *testing.T) {
+func TestExpenseUseCaseSave(t *testing.T) {
 	type fields struct {
 		repository port.ExpenseRepository
-		idGen      port.IdGenerator
 	}
 	type args struct {
-		expense model.Expense
+		expense *model.Expense
 	}
 	tests := []struct {
 		name    string
@@ -181,13 +190,99 @@ func TestExpenseUseCase_Save(t *testing.T) {
 		want    *model.Expense
 		wantErr bool
 	}{
-		// TODO: Add test cases.
+		{
+			name: "given a expense, then save with success",
+			fields: fields{
+				repository: &mocks.ExpenseRepositoryMock{
+					ExistsFn: func(i int) (bool, error) {
+						return false, nil
+					},
+					SaveFn: func(e *model.Expense) (*model.Expense, error) {
+						return e, nil
+					},
+				},
+			},
+			args: args{
+				expense: &model.Expense{
+					Id:      1,
+					Amount:  100,
+					Created: time.Date(2023, 4, 15, 0, 0, 0, 0, time.Local),
+				},
+			},
+			want: &model.Expense{
+				Id:      1,
+				Amount:  100,
+				Created: time.Date(2023, 4, 15, 0, 0, 0, 0, time.Local),
+			},
+			wantErr: false,
+		},
+		{
+			name: "given a expense, when try to save in database, then get error",
+			fields: fields{
+				repository: &mocks.ExpenseRepositoryMock{
+					ExistsFn: func(i int) (bool, error) {
+						return false, nil
+					},
+					SaveFn: func(e *model.Expense) (*model.Expense, error) {
+						return nil, errors.ErrUnsupported
+					},
+				},
+			},
+			args: args{
+				expense: &model.Expense{
+					Id: 1,
+				},
+			},
+			wantErr: true,
+		},
+		{
+			name: "given a expense, when the id is undefined, then get error",
+			args: args{
+				expense: &model.Expense{
+					Id: -1,
+				},
+			},
+			wantErr: true,
+		},
+		{
+			name: "given a expense, when exists in database, then get error",
+			args: args{
+				expense: &model.Expense{
+					Id:     1,
+					Amount: 100,
+				},
+			},
+			fields: fields{
+				repository: &mocks.ExpenseRepositoryMock{
+					ExistsFn: func(i int) (bool, error) {
+						return true, nil
+					},
+				},
+			},
+			wantErr: true,
+		},
+		{
+			name: "given a expense, when check if exists in database, then get error",
+			args: args{
+				expense: &model.Expense{
+					Id:     1,
+					Amount: 100,
+				},
+			},
+			fields: fields{
+				repository: &mocks.ExpenseRepositoryMock{
+					ExistsFn: func(i int) (bool, error) {
+						return false, errors.ErrUnsupported
+					},
+				},
+			},
+			wantErr: true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			uc := ExpenseUseCase{
-				repository: tt.fields.repository,
-				idGen:      tt.fields.idGen,
+				Repository: tt.fields.repository,
 			}
 			got, err := uc.Save(tt.args.expense)
 			if (err != nil) != tt.wantErr {
@@ -196,6 +291,204 @@ func TestExpenseUseCase_Save(t *testing.T) {
 			}
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("ExpenseUseCase.Save() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestExpenseUseCase_Update(t *testing.T) {
+	type fields struct {
+		Repository port.ExpenseRepository
+	}
+	type args struct {
+		expense *model.Expense
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		want    *model.Expense
+		wantErr bool
+	}{
+		{
+			name: "given a expense, update in database with success",
+			fields: fields{
+				Repository: &mocks.ExpenseRepositoryMock{
+					ExistsFn: func(i int) (bool, error) {
+						return true, nil
+					},
+					UpdateFn: func(e *model.Expense) (*model.Expense, error) {
+						return e, nil
+					},
+				},
+			},
+			args: args{
+				expense: &model.Expense{
+					Id:     1,
+					Amount: 200,
+				},
+			},
+			want: &model.Expense{
+				Id:     1,
+				Amount: 200,
+			},
+			wantErr: false,
+		},
+		{
+			name: "given a expense, when check if the expense exists in database, then get error",
+			fields: fields{
+				Repository: &mocks.ExpenseRepositoryMock{
+					ExistsFn: func(i int) (bool, error) {
+						return false, errors.ErrUnsupported
+					},
+				},
+			},
+			args: args{
+				expense: &model.Expense{
+					Id:     1,
+					Amount: 200,
+				},
+			},
+			wantErr: true,
+		},
+		{
+			name: "given a expense, when the expense doesn't exists in database, then get error",
+			fields: fields{
+				Repository: &mocks.ExpenseRepositoryMock{
+					ExistsFn: func(i int) (bool, error) {
+						return false, nil
+					},
+				},
+			},
+			args: args{
+				expense: &model.Expense{
+					Id:     1,
+					Amount: 200,
+				},
+			},
+			wantErr: true,
+		},
+		{
+			name: "given a expense, when get an error on update in database, then get error",
+			fields: fields{
+				Repository: &mocks.ExpenseRepositoryMock{
+					ExistsFn: func(i int) (bool, error) {
+						return true, nil
+					},
+					UpdateFn: func(e *model.Expense) (*model.Expense, error) {
+						return nil, errors.ErrUnsupported
+					},
+				},
+			},
+			args: args{
+				expense: &model.Expense{
+					Id:     1,
+					Amount: 200,
+				},
+			},
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			uc := ExpenseUseCase{
+				Repository: tt.fields.Repository,
+			}
+			got, err := uc.Update(tt.args.expense)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("ExpenseUseCase.Update() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("ExpenseUseCase.Update() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestExpenseUseCase_Delete(t *testing.T) {
+	type fields struct {
+		Repository port.ExpenseRepository
+	}
+	type args struct {
+		id int
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		wantErr bool
+	}{
+		{
+			name: "given an id, then delete item with success",
+			fields: fields{
+				Repository: &mocks.ExpenseRepositoryMock{
+					ExistsFn: func(i int) (bool, error) {
+						return true, nil
+					},
+					DeleteFn: func(i int) error {
+						return nil
+					},
+				},
+			},
+			args: args{
+				id: 1,
+			},
+			wantErr: false,
+		},
+		{
+			name: "given an id, when check if the item exist in database, then get error",
+			fields: fields{
+				Repository: &mocks.ExpenseRepositoryMock{
+					ExistsFn: func(i int) (bool, error) {
+						return false, errors.ErrUnsupported
+					},
+				},
+			},
+			args: args{
+				id: 1,
+			},
+			wantErr: true,
+		},
+		{
+			name: "given an id, when the item doesn't exist in database, then get error",
+			fields: fields{
+				Repository: &mocks.ExpenseRepositoryMock{
+					ExistsFn: func(i int) (bool, error) {
+						return false, nil
+					},
+				},
+			},
+			args: args{
+				id: 1,
+			},
+			wantErr: true,
+		},
+		{
+			name: "given an id, when get an error on delete item, then get error",
+			fields: fields{
+				Repository: &mocks.ExpenseRepositoryMock{
+					ExistsFn: func(i int) (bool, error) {
+						return true, nil
+					},
+					DeleteFn: func(i int) error {
+						return errors.ErrUnsupported
+					},
+				},
+			},
+			args: args{
+				id: 1,
+			},
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			uc := ExpenseUseCase{
+				Repository: tt.fields.Repository,
+			}
+			if err := uc.Delete(tt.args.id); (err != nil) != tt.wantErr {
+				t.Errorf("ExpenseUseCase.Delete() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
 	}

@@ -5,7 +5,7 @@ import (
 )
 
 type Expense struct {
-	Id     string    `json:"id" validate:"required,uuid4"`
-	Amount float64   `json:"amount" validate:"required,number"`
-	Date   time.Time `json:"date" validate:"required"`
+	Id      int       `json:"id" validate:"integer"`
+	Amount  float64   `json:"amount" validate:"required,number"`
+	Created time.Time `json:"created" validate:"required"`
 }

@@ -1,5 +1,5 @@
 module github.com/enaldo1709/budget-manager/domain/model
 
-go 1.20
+go 1.21.1
 
 

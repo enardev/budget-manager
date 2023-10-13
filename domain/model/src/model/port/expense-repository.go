@@ -5,10 +5,10 @@ import (
 )
 
 type ExpenseRepository interface {
-	Exists(id string) bool
-	FindByID(id string) (*model.Expense, error)
+	Exists(id int) (bool, error)
+	FindByID(id int) (*model.Expense, error)
 	FindAll() ([]model.Expense, error)
-	Save(model.Expense) (*model.Expense, error)
-	Update(model.Expense) (*model.Expense, error)
-	Delete(id string) error
+	Save(*model.Expense) (*model.Expense, error)
+	Update(*model.Expense) (*model.Expense, error)
+	Delete(id int) error
 }

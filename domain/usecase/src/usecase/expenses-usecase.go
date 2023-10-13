@@ -6,29 +6,43 @@ import (
 	"github.com/enaldo1709/budget-manager/domain/model/src/model/port"
 )
 
-const ExpenseName = "expense"
+const (
+	ExpenseName     = "expense"
+	ExpenseIfExists = "expense if exists"
+)
 
 type ExpenseUseCase struct {
-	repository port.ExpenseRepository
-	idGen      port.IdGenerator
+	Repository port.ExpenseRepository
 }
 
-func (uc ExpenseUseCase) FindByID(id string) (*model.Expense, error) {
-	if !uc.repository.Exists(id) {
+func (uc ExpenseUseCase) FindByID(id int) (*model.Expense, error) {
+	exists, err := uc.Repository.Exists(id)
+	if err != nil {
+		return nil, errors.NewFindItemError(ExpenseIfExists)
+	}
+	if !exists {
 		return nil, errors.NewItemNotFoundError(ExpenseName)
 	}
-	return uc.repository.FindByID(id)
+	return uc.Repository.FindByID(id)
 }
 
 func (uc ExpenseUseCase) FindAll() ([]model.Expense, error) {
-	return uc.repository.FindAll()
+	return uc.Repository.FindAll()
 }
 
-func (uc ExpenseUseCase) Save(expense model.Expense) (*model.Expense, error) {
-	item := &expense
-	item.Id = uc.idGen.GenerateID()
+func (uc ExpenseUseCase) Save(expense *model.Expense) (*model.Expense, error) {
+	if expense.Id < 0 {
+		return nil, errors.NewInvalidItemError(ExpenseName, "field Id must be a positive integer")
+	}
+	exists, err := uc.Repository.Exists(expense.Id)
+	if err != nil {
+		return nil, errors.NewFindItemError(ExpenseIfExists)
+	}
+	if exists {
+		return nil, errors.NewItemAlreadyExistsError(ExpenseName)
+	}
 
-	result, err := uc.repository.Save(*item)
+	result, err := uc.Repository.Save(expense)
 	if err != nil {
 		return nil, errors.NewSaveItemError(ExpenseName)
 	}
@@ -36,12 +50,16 @@ func (uc ExpenseUseCase) Save(expense model.Expense) (*model.Expense, error) {
 	return result, nil
 }
 
-func (uc ExpenseUseCase) Update(expense model.Expense) (*model.Expense, error) {
-	if !uc.repository.Exists(expense.Id) {
+func (uc ExpenseUseCase) Update(expense *model.Expense) (*model.Expense, error) {
+	exists, err := uc.Repository.Exists(expense.Id)
+	if err != nil {
+		return nil, errors.NewFindItemError(ExpenseIfExists)
+	}
+	if !exists {
 		return nil, errors.NewItemNotFoundError(ExpenseName)
 	}
 
-	result, err := uc.repository.Update(expense)
+	result, err := uc.Repository.Update(expense)
 	if err != nil {
 		return nil, errors.NewUpdateItemError(ExpenseName)
 	}
@@ -49,12 +67,16 @@ func (uc ExpenseUseCase) Update(expense model.Expense) (*model.Expense, error) {
 	return result, nil
 }
 
-func (uc ExpenseUseCase) Delete(id string) error {
-	if !uc.repository.Exists(id) {
+func (uc ExpenseUseCase) Delete(id int) error {
+	exists, err := uc.Repository.Exists(id)
+	if err != nil {
+		return errors.NewFindItemError(ExpenseIfExists)
+	}
+	if !exists {
 		return errors.NewItemNotFoundError(ExpenseName)
 	}
 
-	if err := uc.repository.Delete(id); err != nil {
+	if err := uc.Repository.Delete(id); err != nil {
 		return errors.NewDeleteItemError(ExpenseName)
 	}
 
