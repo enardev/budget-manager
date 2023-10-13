@@ -29,8 +29,8 @@ func TestExpenseUseCaseFindByID(t *testing.T) {
 			name: "given an id then get a expense model",
 			fields: fields{
 				repository: &mocks.ExpenseRepositoryMock{
-					ExistsFn: func(s int) bool {
-						return true
+					ExistsFn: func(s int) (bool, error) {
+						return true, nil
 					},
 					FindByIDFn: func(id int) (*model.Expense, error) {
 						return &model.Expense{
@@ -50,11 +50,23 @@ func TestExpenseUseCaseFindByID(t *testing.T) {
 			wantErr: false,
 		},
 		{
-			name: "given an id when the expense not exists then get an error",
+			name: "given an id, when the expense not exists then get an error",
 			fields: fields{
 				repository: &mocks.ExpenseRepositoryMock{
-					ExistsFn: func(s int) bool {
-						return false
+					ExistsFn: func(s int) (bool, error) {
+						return false, nil
+					},
+				},
+			},
+			args:    args{id: 1},
+			wantErr: true,
+		},
+		{
+			name: "given an id, when check if the expense exists, then get an error",
+			fields: fields{
+				repository: &mocks.ExpenseRepositoryMock{
+					ExistsFn: func(s int) (bool, error) {
+						return false, errors.ErrUnsupported
 					},
 				},
 			},
@@ -90,7 +102,7 @@ func TestExpenseUseCaseFindAll(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "Got an array of expenses",
+			name: "got an array of expenses",
 			fields: fields{
 				repository: &mocks.ExpenseRepositoryMock{
 					FindAllFn: func() ([]model.Expense, error) {
@@ -124,7 +136,7 @@ func TestExpenseUseCaseFindAll(t *testing.T) {
 			wantErr: false,
 		},
 		{
-			name: "Got an empty array",
+			name: "got an empty array",
 			fields: fields{
 				repository: &mocks.ExpenseRepositoryMock{
 					FindAllFn: func() ([]model.Expense, error) {
@@ -136,7 +148,7 @@ func TestExpenseUseCaseFindAll(t *testing.T) {
 			wantErr: false,
 		},
 		{
-			name: "Got an error",
+			name: "got an error",
 			fields: fields{
 				repository: &mocks.ExpenseRepositoryMock{
 					FindAllFn: func() ([]model.Expense, error) {
@@ -182,8 +194,8 @@ func TestExpenseUseCaseSave(t *testing.T) {
 			name: "given a expense, then save with success",
 			fields: fields{
 				repository: &mocks.ExpenseRepositoryMock{
-					ExistsFn: func(i int) bool {
-						return false
+					ExistsFn: func(i int) (bool, error) {
+						return false, nil
 					},
 					SaveFn: func(e *model.Expense) (*model.Expense, error) {
 						return e, nil
@@ -208,8 +220,8 @@ func TestExpenseUseCaseSave(t *testing.T) {
 			name: "given a expense, when try to save in database, then get error",
 			fields: fields{
 				repository: &mocks.ExpenseRepositoryMock{
-					ExistsFn: func(i int) bool {
-						return false
+					ExistsFn: func(i int) (bool, error) {
+						return false, nil
 					},
 					SaveFn: func(e *model.Expense) (*model.Expense, error) {
 						return nil, errors.ErrUnsupported
@@ -242,8 +254,25 @@ func TestExpenseUseCaseSave(t *testing.T) {
 			},
 			fields: fields{
 				repository: &mocks.ExpenseRepositoryMock{
-					ExistsFn: func(i int) bool {
-						return true
+					ExistsFn: func(i int) (bool, error) {
+						return true, nil
+					},
+				},
+			},
+			wantErr: true,
+		},
+		{
+			name: "given a expense, when check if exists in database, then get error",
+			args: args{
+				expense: &model.Expense{
+					Id:     1,
+					Amount: 100,
+				},
+			},
+			fields: fields{
+				repository: &mocks.ExpenseRepositoryMock{
+					ExistsFn: func(i int) (bool, error) {
+						return false, errors.ErrUnsupported
 					},
 				},
 			},
@@ -285,8 +314,8 @@ func TestExpenseUseCase_Update(t *testing.T) {
 			name: "given a expense, update in database with success",
 			fields: fields{
 				Repository: &mocks.ExpenseRepositoryMock{
-					ExistsFn: func(i int) bool {
-						return true
+					ExistsFn: func(i int) (bool, error) {
+						return true, nil
 					},
 					UpdateFn: func(e *model.Expense) (*model.Expense, error) {
 						return e, nil
@@ -306,11 +335,28 @@ func TestExpenseUseCase_Update(t *testing.T) {
 			wantErr: false,
 		},
 		{
+			name: "given a expense, when check if the expense exists in database, then get error",
+			fields: fields{
+				Repository: &mocks.ExpenseRepositoryMock{
+					ExistsFn: func(i int) (bool, error) {
+						return false, errors.ErrUnsupported
+					},
+				},
+			},
+			args: args{
+				expense: &model.Expense{
+					Id:     1,
+					Amount: 200,
+				},
+			},
+			wantErr: true,
+		},
+		{
 			name: "given a expense, when the expense doesn't exists in database, then get error",
 			fields: fields{
 				Repository: &mocks.ExpenseRepositoryMock{
-					ExistsFn: func(i int) bool {
-						return false
+					ExistsFn: func(i int) (bool, error) {
+						return false, nil
 					},
 				},
 			},
@@ -326,8 +372,8 @@ func TestExpenseUseCase_Update(t *testing.T) {
 			name: "given a expense, when get an error on update in database, then get error",
 			fields: fields{
 				Repository: &mocks.ExpenseRepositoryMock{
-					ExistsFn: func(i int) bool {
-						return true
+					ExistsFn: func(i int) (bool, error) {
+						return true, nil
 					},
 					UpdateFn: func(e *model.Expense) (*model.Expense, error) {
 						return nil, errors.ErrUnsupported
@@ -377,8 +423,8 @@ func TestExpenseUseCase_Delete(t *testing.T) {
 			name: "given an id, then delete item with success",
 			fields: fields{
 				Repository: &mocks.ExpenseRepositoryMock{
-					ExistsFn: func(i int) bool {
-						return true
+					ExistsFn: func(i int) (bool, error) {
+						return true, nil
 					},
 					DeleteFn: func(i int) error {
 						return nil
@@ -391,11 +437,25 @@ func TestExpenseUseCase_Delete(t *testing.T) {
 			wantErr: false,
 		},
 		{
+			name: "given an id, when check if the item exist in database, then get error",
+			fields: fields{
+				Repository: &mocks.ExpenseRepositoryMock{
+					ExistsFn: func(i int) (bool, error) {
+						return false, errors.ErrUnsupported
+					},
+				},
+			},
+			args: args{
+				id: 1,
+			},
+			wantErr: true,
+		},
+		{
 			name: "given an id, when the item doesn't exist in database, then get error",
 			fields: fields{
 				Repository: &mocks.ExpenseRepositoryMock{
-					ExistsFn: func(i int) bool {
-						return false
+					ExistsFn: func(i int) (bool, error) {
+						return false, nil
 					},
 				},
 			},
@@ -408,8 +468,8 @@ func TestExpenseUseCase_Delete(t *testing.T) {
 			name: "given an id, when get an error on delete item, then get error",
 			fields: fields{
 				Repository: &mocks.ExpenseRepositoryMock{
-					ExistsFn: func(i int) bool {
-						return true
+					ExistsFn: func(i int) (bool, error) {
+						return true, nil
 					},
 					DeleteFn: func(i int) error {
 						return errors.ErrUnsupported
