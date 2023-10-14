@@ -3,7 +3,8 @@ package errors
 import (
 	"net/http"
 
-	"github.com/enaldo1709/budget-manager/domain/model/src/model/errors"
+	coreErrors "github.com/enaldo1709/budget-manager/domain/model/src/model/errors"
+	validationErrors "github.com/enaldo1709/budget-manager/infrastructure/helpers/validation/src/validation/errors"
 )
 
 func MapError(e error) *WebError {
@@ -11,13 +12,19 @@ func MapError(e error) *WebError {
 		return nil
 	}
 
-	if err, ok := e.(*errors.ItemNotFound); ok {
+	if err, ok := e.(*coreErrors.ItemNotFound); ok {
 		return NewWebError(http.StatusNotFound, err.Error())
 	}
-	if err, ok := e.(*errors.InvalidItemError); ok {
+	if err, ok := e.(*coreErrors.InvalidItemError); ok {
 		return NewWebError(http.StatusBadRequest, err.Error())
 	}
-	if err, ok := e.(*errors.ItemAlreadyExistsError); ok {
+	if err, ok := e.(*coreErrors.ItemAlreadyExistsError); ok {
+		return NewWebError(http.StatusBadRequest, err.Error())
+	}
+	if err, ok := e.(*validationErrors.ValidationError); ok {
+		return NewWebError(http.StatusBadRequest, err.Error())
+	}
+	if err, ok := e.(*validationErrors.DecodeError); ok {
 		return NewWebError(http.StatusBadRequest, err.Error())
 	}
 
