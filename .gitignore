@@ -20,3 +20,9 @@
 
 # Backup files
 **.bk
+
+# VS Code files
+*.vscode
+**.vscode**
+*.vscode/
+**.vscode/**
