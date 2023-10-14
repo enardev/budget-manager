@@ -8,11 +8,14 @@ import (
 
 	"github.com/enaldo1709/budget-manager/domain/usecase/src/usecase"
 	"github.com/enaldo1709/budget-manager/infrastructure/entry-points/web-api/src/api/dto"
+	webErrors "github.com/enaldo1709/budget-manager/infrastructure/entry-points/web-api/src/api/errors"
 	"github.com/enaldo1709/budget-manager/infrastructure/entry-points/web-api/src/api/mappers"
+	"github.com/enaldo1709/budget-manager/infrastructure/helpers/validation/src/validation"
 	"github.com/gin-gonic/gin"
 )
 
 type BudgetHandler struct {
+	Validator      *validation.Validator
 	ExpenseUseCase usecase.ExpenseUseCase
 }
 
@@ -68,7 +71,7 @@ func (h BudgetHandler) SaveExpense(gc *gin.Context) {
 
 func (h BudgetHandler) UpdateExpense(gc *gin.Context) {
 	var expenseDto dto.ExpenseDTO
-	if err := json.NewDecoder(gc.Request.Body).Decode(&expenseDto); err != nil {
+	if err := h.Validator.DecodeAndValidate(gc.Request.Body, &expenseDto); err != nil {
 		responseErr(gc, err)
 		return
 	}
@@ -110,7 +113,6 @@ func (h BudgetHandler) DeleteExpense(gc *gin.Context) {
 }
 
 func responseErr(gc *gin.Context, err error) {
-	gc.JSON(http.StatusInternalServerError, gin.H{
-		"error": err.Error(),
-	})
+	webErr := webErrors.MapError(err)
+	gc.JSON(webErr.Code, webErr)
 }

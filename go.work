@@ -7,4 +7,5 @@ use(
     ./infrastructure/helpers/configutil
     ./infrastructure/adapters/postgresql-adapter
     ./infrastructure/entry-points/web-api
+    ./infrastructure/helpers/validation
 )

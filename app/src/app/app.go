@@ -10,6 +10,7 @@ import (
 	"github.com/enaldo1709/budget-manager/infrastructure/adapters/postgresql-adapter/src/postgresql/postgresconfig"
 	"github.com/enaldo1709/budget-manager/infrastructure/entry-points/web-api/src/api"
 	"github.com/enaldo1709/budget-manager/infrastructure/helpers/configutil/src/configutil"
+	"github.com/enaldo1709/budget-manager/infrastructure/helpers/validation/src/validation"
 )
 
 func main() {
@@ -33,8 +34,10 @@ func main() {
 	expenseUseCase := usecase.ExpenseUseCase{Repository: repository}
 
 	// Api configuration
+	validator := validation.NewValidator()
 	budgetHandler := api.BudgetHandler{
 		ExpenseUseCase: expenseUseCase,
+		Validator:      validator,
 	}
 	router := api.ConfigRouter(budgetHandler)
 	router.Run()
