@@ -1,11 +1,8 @@
-go 1.21.1
+go 1.20
 
 use(
     ./app
     ./domain/model
     ./domain/usecase
-    ./infrastructure/helpers/configutil
-    ./infrastructure/adapters/postgresql-adapter
-    ./infrastructure/entry-points/web-api
-    ./infrastructure/helpers/validation
+    ./helpers/errorutil
 )

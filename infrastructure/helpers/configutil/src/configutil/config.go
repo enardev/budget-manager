@@ -3,7 +3,6 @@ package configutil
 import (
 	"fmt"
 	"os"
-	"path"
 	"strings"
 
 	"slices"
@@ -14,9 +13,9 @@ import (
 
 func LoadConfig() {
 	profiles := getActiveProfiles()
-	files := []string{getFileRoute("config/application.yaml")}
+	files := []string{"config/application.yaml"}
 	for _, prof := range profiles {
-		files = append(files, getFileRoute(fmt.Sprintf("config/application-%s.yaml", prof)))
+		files = append(files, fmt.Sprintf("config/application-%s.yaml", prof))
 	}
 	configv2.WithOptions(configv2.ParseEnv)
 	configv2.AddDriver(yamlv3.Driver)
@@ -43,16 +42,4 @@ func getActiveProfiles() []string {
 	}
 
 	return profiles
-}
-
-func getFileRoute(filename string) string {
-	appPath := os.Getenv("APP_PATH")
-	if appPath == "" {
-		cw, err := os.Getwd()
-		if err != nil {
-			return filename
-		}
-		appPath = cw
-	}
-	return path.Join(appPath, filename)
 }
