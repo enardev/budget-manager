@@ -1,7 +1,6 @@
 package errors
 
 import (
-	"errors"
 	"fmt"
 )
 
@@ -9,13 +8,10 @@ type ValidationError struct {
 	message string
 }
 
-func NewValidationError(s interface{}, err error) error {
-	return errors.Join(
-		&ValidationError{
-			message: fmt.Sprintf("struct of type %T is invalid... ", s),
-		},
-		err,
-	)
+func NewValidationError(s interface{}, cause error) error {
+	return &ValidationError{
+		message: fmt.Sprintf("struct of type %T is invalid... %s", s, cause.Error()),
+	}
 }
 
 func (e *ValidationError) Error() string {
