@@ -152,7 +152,7 @@ func TestExpenseUseCaseFindAll(t *testing.T) {
 			fields: fields{
 				repository: &mocks.ExpenseRepositoryMock{
 					FindAllFn: func() ([]model.Expense, error) {
-						return nil, errors.New("error finding expenses")
+						return nil, errors.ErrUnsupported
 					},
 				},
 			},
