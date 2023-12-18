@@ -1,29 +1,17 @@
-module github.com/enaldo1709/budget-manager/app
+module github.com/enaldo1709/budget-manager/infrastructure/entry-points/web-api
 
 go 1.21.1
 
-replace github.com/enaldo1709/budget-manager/domain/model => ../domain/model
-
-replace github.com/enaldo1709/budget-manager/domain/usecase => ../domain/usecase
-
-replace github.com/enaldo1709/budget-manager/infrastructure/entry-points/web-api => ../infrastructure/entry-points/web-api
-
-replace github.com/enaldo1709/budget-manager/infrastructure/helpers/configutil => ../infrastructure/helpers/configutil
-
-replace github.com/enaldo1709/budget-manager/infrastructure/adapters/postgresql-adapter => ../infrastructure/adapters/postgresql-adapter
-
-replace github.com/enaldo1709/budget-manager/infrastructure/helpers/validation => ../infrastructure/helpers/validation
-
-require github.com/enaldo1709/budget-manager/domain/model v0.0.0-20230322031830-6842ea4aeb05
+replace github.com/enaldo1709/budget-manager/infrastructure/helpers/validation => ../../helpers/validation
+replace github.com/enaldo1709/budget-manager/domain/model => ../../../domain/model
+replace github.com/enaldo1709/budget-manager/domain/usecase => ../../../domain/usecase
 
 require (
 	github.com/bytedance/sonic v1.10.1 // indirect
 	github.com/chenzhuoyu/base64x v0.0.0-20230717121745-296ad89f973d // indirect
 	github.com/chenzhuoyu/iasm v0.9.0 // indirect
+	github.com/enaldo1709/budget-manager/domain/model v0.0.0-20230322031830-6842ea4aeb05 // indirect
 	github.com/enaldo1709/budget-manager/domain/usecase v0.0.0-20230322031830-6842ea4aeb05 // indirect
-	github.com/enaldo1709/budget-manager/infrastructure/adapters/postgresql-adapter v0.0.0-00010101000000-000000000000 // indirect
-	github.com/enaldo1709/budget-manager/infrastructure/entry-points/web-api v0.0.0-00010101000000-000000000000 // indirect
-	github.com/enaldo1709/budget-manager/infrastructure/helpers/configutil v0.0.0-00010101000000-000000000000 // indirect
 	github.com/enaldo1709/budget-manager/infrastructure/helpers/validation v0.0.0-00010101000000-000000000000 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.2 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect

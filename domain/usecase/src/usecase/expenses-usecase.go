@@ -27,7 +27,12 @@ func (uc ExpenseUseCase) FindByID(id int) (*model.Expense, error) {
 }
 
 func (uc ExpenseUseCase) FindAll() ([]model.Expense, error) {
-	return uc.Repository.FindAll()
+	expenses, err := uc.Repository.FindAll()
+	if err != nil {
+		return nil, errors.NewFindItemError("expenses")
+	}
+
+	return expenses, nil
 }
 
 func (uc ExpenseUseCase) Save(expense *model.Expense) (*model.Expense, error) {

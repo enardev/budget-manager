@@ -12,7 +12,7 @@ type InvalidItemError struct {
 func NewInvalidItemError(item string, details ...string) error {
 	return &InvalidItemError{
 		message: strings.
-			Join(append([]string{fmt.Sprintf("%s is invalid", item)}, details...), ","),
+			Join(append([]string{fmt.Sprintf("%s is invalid", item)}, details...), ", "),
 	}
 }
 

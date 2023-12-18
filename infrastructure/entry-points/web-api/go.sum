@@ -10,6 +10,10 @@ github.com/chenzhuoyu/iasm v0.9.0 h1:9fhXjVzq5hUy2gkhhgHl95zG2cEAhw9OSGs8toWWAwo
 github.com/chenzhuoyu/iasm v0.9.0/go.mod h1:Xjy2NpN3h7aUqeqM+woSuuvxmIe6+DDsiNLIrkAmYog=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
+github.com/enaldo1709/budget-manager/domain/model v0.0.0-20230322031830-6842ea4aeb05 h1:19vw3/iWmoncqCqxSc422iP78nLiWgIlCDgKwGBVdEM=
+github.com/enaldo1709/budget-manager/domain/model v0.0.0-20230322031830-6842ea4aeb05/go.mod h1:WTcibTxJEA9iNxIFxg+XSVu5YwnCMKs4Yo95CULrSTA=
+github.com/enaldo1709/budget-manager/domain/usecase v0.0.0-20230322031830-6842ea4aeb05 h1:a6YfjW5rByV6tO15hw8hpdmvM/Uy3IhIF/Z8/sRPEjM=
+github.com/enaldo1709/budget-manager/domain/usecase v0.0.0-20230322031830-6842ea4aeb05/go.mod h1:fPlJEujeX3svBTf4GncSQ8Q7nECsFinSOgX185LHtrQ=
 github.com/gabriel-vasile/mimetype v1.4.2 h1:w5qFW6JKBz9Y393Y4q372O9A7cUSequkh1Q7OhCmWKU=
 github.com/gabriel-vasile/mimetype v1.4.2/go.mod h1:zApsH/mKG4w07erKIaJPFiX0Tsq9BFQgN3qGY5GnNgA=
 github.com/gin-contrib/sse v0.1.0 h1:Y/yl/+YNO8GZSjAhjMsSuLt29uWRFHdHYUb5lYOV9qE=
